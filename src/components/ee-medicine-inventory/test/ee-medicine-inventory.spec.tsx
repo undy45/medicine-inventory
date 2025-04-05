@@ -7,12 +7,10 @@ describe('ee-medicine-inventory', () => {
       components: [EeMedicineInventory],
       html: `<ee-medicine-inventory></ee-medicine-inventory>`,
     });
-    expect(page.root).toEqualHtml(`
-      <ee-medicine-inventory>
-        <mock:shadow-root>
-          <slot></slot>
-        </mock:shadow-root>
-      </ee-medicine-inventory>
-    `);
+    const wlList = page.rootInstance as EeMedicineInventory;
+    const expectedPatients = wlList?.medicineInventory?.length
+
+    const items = page.root.shadowRoot.querySelectorAll("md-list-item");
+    expect(items.length).toEqual(expectedPatients);
   });
 });
