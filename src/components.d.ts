@@ -6,56 +6,32 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first": string;
-        /**
-          * The last name
-         */
-        "last": string;
-        /**
-          * The middle name
-         */
-        "middle": string;
+    interface EeMedicineInventory {
     }
 }
 declare global {
-    interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
+    interface HTMLEeMedicineInventoryElement extends Components.EeMedicineInventory, HTMLStencilElement {
     }
-    var HTMLMyComponentElement: {
-        prototype: HTMLMyComponentElement;
-        new (): HTMLMyComponentElement;
+    var HTMLEeMedicineInventoryElement: {
+        prototype: HTMLEeMedicineInventoryElement;
+        new (): HTMLEeMedicineInventoryElement;
     };
     interface HTMLElementTagNameMap {
-        "my-component": HTMLMyComponentElement;
+        "ee-medicine-inventory": HTMLEeMedicineInventoryElement;
     }
 }
 declare namespace LocalJSX {
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first"?: string;
-        /**
-          * The last name
-         */
-        "last"?: string;
-        /**
-          * The middle name
-         */
-        "middle"?: string;
+    interface EeMedicineInventory {
     }
     interface IntrinsicElements {
-        "my-component": MyComponent;
+        "ee-medicine-inventory": EeMedicineInventory;
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+            "ee-medicine-inventory": LocalJSX.EeMedicineInventory & JSXBase.HTMLAttributes<HTMLEeMedicineInventoryElement>;
         }
     }
 }
