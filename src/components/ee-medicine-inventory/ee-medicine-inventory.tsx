@@ -1,4 +1,4 @@
-import { Component, Host, h } from '@stencil/core';
+import { Component, Event, EventEmitter,  Host, h } from '@stencil/core';
 
 @Component({
   tag: 'ee-medicine-inventory',
@@ -6,6 +6,7 @@ import { Component, Host, h } from '@stencil/core';
   shadow: true,
 })
 export class EeMedicineInventory {
+  @Event({ eventName: "entry-clicked"}) entryClicked: EventEmitter<string>;
 
   medicineInventory: any[];
 
@@ -35,8 +36,8 @@ export class EeMedicineInventory {
     return (
       <Host>
         <md-list>
-          {this.medicineInventory.map(medicine =>
-            <md-list-item>
+          {this.medicineInventory.map((medicine, index) =>
+            <md-list-item onClick={ () => this.entryClicked.emit(index.toString())}>
               <div slot="headline">{medicine.name}</div>
               <div slot="supporting-text">{"Pocet kusov: " + medicine.count}</div>
               <md-icon slot="start">pill</md-icon>
