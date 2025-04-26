@@ -7,9 +7,13 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface EeMedicineApp {
+        "ambulanceId": string;
+        "apiBase": string;
         "basePath": string;
     }
     interface EeMedicineInventory {
+        "ambulanceId": string;
+        "apiBase": string;
     }
     interface EeOrderEditor {
         "entryId": string;
@@ -72,9 +76,13 @@ declare global {
 }
 declare namespace LocalJSX {
     interface EeMedicineApp {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
         "basePath"?: string;
     }
     interface EeMedicineInventory {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
         "onEntry-clicked"?: (event: EeMedicineInventoryCustomEvent<string>) => void;
     }
     interface EeOrderEditor {

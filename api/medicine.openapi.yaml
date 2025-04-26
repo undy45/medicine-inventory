@@ -1,0 +1,96 @@
+openapi: 3.0.0
+servers:
+  - description: Cluster Endpoint
+    url: /api
+info:
+  description: Medicine inventory management for Web-In-Cloud system
+  version: "1.0.0"
+  title: Medicine Inventory API
+  contact:
+    email: your_email@stuba.sk
+  license:
+    name: CC BY 4.0
+    url: "https://creativecommons.org/licenses/by/4.0/"
+tags:
+  - name: medicineInventory
+    description: Medicine Inventory API
+paths:
+  "/medicine-inventory/{ambulanceId}/entries":
+    get:
+      tags:
+        - medicineInventory
+      summary: Provides the ambulance medicine inventory
+      operationId: getMedicineInventoryEntries
+      description: By using ambulanceId you get list of entries in ambulance medicine inventory
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: pass the id of the particular ambulance
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: value of the medicine inventory entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MedicineInventoryEntry"
+              examples:
+                response:
+                  $ref: "#/components/examples/MedicineInventoryEntriesExample"
+        "404":
+          description: Ambulance with such ID does not exist
+
+components:
+  schemas:
+    MedicineInventoryEntry:
+      type: object
+      required: [ id, medicineId, count ]
+      properties:
+        id:
+          type: string
+          example: x321ab3
+          description: Unique id of the entry in this medicine inventory
+        name:
+          type: string
+          example: Paralen
+          description: Name of medicine in medicine inventory
+        medicineId:
+          type: string
+          example: 460527-paralen
+          description: Unique identifier of the medicine known to Web-In-Cloud system
+        count:
+          type: integer
+          format: int32
+          example: 15
+          description: >-
+            Medicine count in the ambulance medicine inventory.
+            It is a number of packages in the medicine inventory for the given ambulance.
+      example:
+        $ref: "#/components/examples/MedicineInventoryEntriesExample"
+  examples:
+    MedicineInventoryEntry:
+      summary: Paralen medicine inventory entry
+      description: |
+        Entry represents a medicine in the ambulance inventory
+      value:
+        id: x321ab3
+        name: Paralen
+        medicineId: 74895-paralen
+        count: 15
+    MedicineInventoryEntriesExample:
+      summary: List of medicines in given ambulance inventory
+      description: |
+        Example medicine in ambulance inventory containing 2 medicines
+      value:
+        - id: x321ab3
+          name: Paralen
+          medicineId: 460527-paralen
+          count: 15
+        - id: x321ab4
+          name: Mig 400
+          medicineId: 780907-mig-400
+          count: 25

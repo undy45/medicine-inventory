@@ -13,8 +13,9 @@ declare global {
 })
 export class EeMedicineApp {
   @State() private relativePath = '';
-
   @Prop() basePath: string = '';
+  @Prop() apiBase: string;
+  @Prop() ambulanceId: string;
 
   componentWillLoad() {
     const baseUri = new URL(this.basePath, document.baseURI || '/').pathname;
@@ -58,8 +59,8 @@ export class EeMedicineApp {
           ? <ee-order-editor entry-id={entryId}
                              oneditor-closed={() => navigate('./list')}>
           </ee-order-editor>
-          : <ee-medicine-inventory
-            onentry-clicked={(ev: CustomEvent<string>) => navigate('./order/' + ev.detail)}>
+          : <ee-medicine-inventory ambulance-id={this.ambulanceId} api-base={this.apiBase}
+                                   onentry-clicked={(ev: CustomEvent<string>) => navigate('./order/' + ev.detail)}>
           </ee-medicine-inventory>
         }
 

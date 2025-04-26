@@ -1,4 +1,5 @@
-import { Component, Event, EventEmitter,  Host, h } from '@stencil/core';
+import { Component, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
+import { MedicineInventoryApi, MedicineInventoryEntry, Configuration } from '../../api/medicine';
 
 @Component({
   tag: 'ee-medicine-inventory',
@@ -6,26 +7,31 @@ import { Component, Event, EventEmitter,  Host, h } from '@stencil/core';
   shadow: true,
 })
 export class EeMedicineInventory {
-  @Event({ eventName: "entry-clicked"}) entryClicked: EventEmitter<string>;
+  @Event({ eventName: 'entry-clicked' }) entryClicked: EventEmitter<string>;
+  @Prop() apiBase: string;
+  @Prop() ambulanceId: string;
+  @State() errorMessage: string;
 
-  medicineInventory: any[];
+  medicineInventory: MedicineInventoryEntry[];
 
-  private async getMedicineInventoryAsync(){
-    return await Promise.resolve(
-      [{
-        name: 'Paralen',
-        patientId: '10001',
-        count: 20
-      }, {
-        name: 'Mig 400',
-        patientId: '10096',
-        count: 30
-      }, {
-        name: 'Espumisan',
-        patientId: '10028',
-        count: 10
-      }]
-    );
+  private async getMedicineInventoryAsync(): Promise<MedicineInventoryEntry[]> {
+    // be prepared for connectivity issues
+    try {
+      const configuration = new Configuration({
+        basePath: this.apiBase,
+      });
+
+      const waitingListApi = new MedicineInventoryApi(configuration);
+      const response = await waitingListApi.getMedicineInventoryEntriesRaw({ ambulanceId: this.ambulanceId });
+      if (response.raw.status < 299) {
+        return await response.value();
+      } else {
+        this.errorMessage = `Cannot retrieve list of waiting patients: ${response.raw.statusText}`;
+      }
+    } catch (err: any) {
+      this.errorMessage = `Cannot retrieve list of waiting patients: ${err.message || 'unknown'}`;
+    }
+    return [];
   }
 
   async componentWillLoad() {
@@ -35,15 +41,19 @@ export class EeMedicineInventory {
   render() {
     return (
       <Host>
-        <md-list>
-          {this.medicineInventory.map((medicine, index) =>
-            <md-list-item onClick={ () => this.entryClicked.emit(index.toString())}>
-              <div slot="headline">{medicine.name}</div>
-              <div slot="supporting-text">{"Pocet kusov: " + medicine.count}</div>
-              <md-icon slot="start">pill</md-icon>
-            </md-list-item>
-          )}
-        </md-list>
+        {this.errorMessage
+          ? <div class="error">{this.errorMessage}</div>
+          :
+          <md-list>
+            {this.medicineInventory.map(medicine =>
+              <md-list-item onClick={() => this.entryClicked.emit(medicine.id)}>
+                <div slot="headline">{medicine.name}</div>
+                <div slot="supporting-text">{'Pocet kusov: ' + medicine.count}</div>
+                <md-icon slot="start">pill</md-icon>
+              </md-list-item>,
+            )}
+          </md-list>
+        }
       </Host>
     );
   }
