@@ -57,6 +57,8 @@ export class EeMedicineApp {
       <Host>
         {element === 'editor'
           ? <ee-order-editor entry-id={entryId}
+                             ambulance-id={this.ambulanceId}
+                             api-base={this.apiBase}
                              oneditor-closed={() => navigate('./list')}>
           </ee-order-editor>
           : <ee-medicine-inventory ambulance-id={this.ambulanceId} api-base={this.apiBase}

@@ -43,6 +43,110 @@ paths:
                   $ref: "#/components/examples/MedicineInventoryEntriesExample"
         "404":
           description: Ambulance with such ID does not exist
+  "/medicine-inventory/{ambulanceId}/entries/{entryId}":
+    get:
+      tags:
+        - medicineInventory
+      summary: Provides details about ambulance medicine inventory entry
+      operationId: getMedicineInventoryEntry
+      description: >-
+        By using ambulanceId and entryId you can details of particular entry
+        ambulance medicine inventory.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: pass the id of the particular ambulance
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: entryId
+          description: pass the id of the particular entry in the medicine inventory
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: value of the medicine inventory entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicineInventoryEntry"
+              examples:
+                response:
+                  $ref: "#/components/examples/MedicineInventoryEntryExample"
+        "404":
+          description: Ambulance or Entry with such ID does not exists
+    put:
+      tags:
+        - medicineInventory
+      summary: Updates specific entry
+      operationId: updateMedicineInventoryEntry
+      description: Use this method to update content of the medicine inventory entry.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: pass the id of the particular ambulance
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: entryId
+          description: pass the id of the particular entry in the medicine inventory
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MedicineInventoryEntry"
+            examples:
+              request:
+                $ref: "#/components/examples/MedicineInventoryEntryExample"
+        description: Medicine inventory entry to update
+        required: true
+      responses:
+        "200":
+          description: >-
+            value of the medicine inventory entry with update count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicineInventoryEntry"
+              examples:
+                response:
+                  $ref: "#/components/examples/MedicineInventoryEntryExample"
+        "403":
+          description: >-
+            Value of the entryID and the data id is mismatching. Details are
+            provided in the response body.
+        "404":
+          description: Ambulance or Entry with such ID does not exists
+    delete:
+      tags:
+        - medicineInventory
+      summary: Deletes specific entry
+      operationId: deleteMedicineInventoryEntry
+      description: Use this method to delete the specific entry from the medicine inventory.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: pass the id of the particular ambulance
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: entryId
+          description: pass the id of the particular entry in the medicine inventory
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Item deleted
+        "404":
+          description: Ambulance or Entry with such ID does not exists
 
 components:
   schemas:
@@ -72,7 +176,7 @@ components:
       example:
         $ref: "#/components/examples/MedicineInventoryEntriesExample"
   examples:
-    MedicineInventoryEntry:
+    MedicineInventoryEntryExample:
       summary: Paralen medicine inventory entry
       description: |
         Entry represents a medicine in the ambulance inventory

@@ -22,8 +22,24 @@ import {
     MedicineInventoryEntryToJSON,
 } from '../models';
 
+export interface DeleteMedicineInventoryEntryRequest {
+    ambulanceId: string;
+    entryId: string;
+}
+
 export interface GetMedicineInventoryEntriesRequest {
     ambulanceId: string;
+}
+
+export interface GetMedicineInventoryEntryRequest {
+    ambulanceId: string;
+    entryId: string;
+}
+
+export interface UpdateMedicineInventoryEntryRequest {
+    ambulanceId: string;
+    entryId: string;
+    medicineInventoryEntry: MedicineInventoryEntry;
 }
 
 /**
@@ -33,6 +49,23 @@ export interface GetMedicineInventoryEntriesRequest {
  * @interface MedicineInventoryApiInterface
  */
 export interface MedicineInventoryApiInterface {
+    /**
+     * Use this method to delete the specific entry from the medicine inventory.
+     * @summary Deletes specific entry
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} entryId pass the id of the particular entry in the medicine inventory
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineInventoryApiInterface
+     */
+    deleteMedicineInventoryEntryRaw(requestParameters: DeleteMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>>;
+
+    /**
+     * Use this method to delete the specific entry from the medicine inventory.
+     * Deletes specific entry
+     */
+    deleteMedicineInventoryEntry(requestParameters: DeleteMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void>;
+
     /**
      * By using ambulanceId you get list of entries in ambulance medicine inventory
      * @summary Provides the ambulance medicine inventory
@@ -49,12 +82,82 @@ export interface MedicineInventoryApiInterface {
      */
     getMedicineInventoryEntries(requestParameters: GetMedicineInventoryEntriesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<MedicineInventoryEntry>>;
 
+    /**
+     * By using ambulanceId and entryId you can details of particular entry ambulance medicine inventory.
+     * @summary Provides details about ambulance medicine inventory entry
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} entryId pass the id of the particular entry in the medicine inventory
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineInventoryApiInterface
+     */
+    getMedicineInventoryEntryRaw(requestParameters: GetMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MedicineInventoryEntry>>;
+
+    /**
+     * By using ambulanceId and entryId you can details of particular entry ambulance medicine inventory.
+     * Provides details about ambulance medicine inventory entry
+     */
+    getMedicineInventoryEntry(requestParameters: GetMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MedicineInventoryEntry>;
+
+    /**
+     * Use this method to update content of the medicine inventory entry.
+     * @summary Updates specific entry
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} entryId pass the id of the particular entry in the medicine inventory
+     * @param {MedicineInventoryEntry} medicineInventoryEntry Medicine inventory entry to update
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineInventoryApiInterface
+     */
+    updateMedicineInventoryEntryRaw(requestParameters: UpdateMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MedicineInventoryEntry>>;
+
+    /**
+     * Use this method to update content of the medicine inventory entry.
+     * Updates specific entry
+     */
+    updateMedicineInventoryEntry(requestParameters: UpdateMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MedicineInventoryEntry>;
+
 }
 
 /**
  * 
  */
 export class MedicineInventoryApi extends runtime.BaseAPI implements MedicineInventoryApiInterface {
+
+    /**
+     * Use this method to delete the specific entry from the medicine inventory.
+     * Deletes specific entry
+     */
+    async deleteMedicineInventoryEntryRaw(requestParameters: DeleteMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.ambulanceId === null || requestParameters.ambulanceId === undefined) {
+            throw new runtime.RequiredError('ambulanceId','Required parameter requestParameters.ambulanceId was null or undefined when calling deleteMedicineInventoryEntry.');
+        }
+
+        if (requestParameters.entryId === null || requestParameters.entryId === undefined) {
+            throw new runtime.RequiredError('entryId','Required parameter requestParameters.entryId was null or undefined when calling deleteMedicineInventoryEntry.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/medicine-inventory/{ambulanceId}/entries/{entryId}`.replace(`{${"ambulanceId"}}`, encodeURIComponent(String(requestParameters.ambulanceId))).replace(`{${"entryId"}}`, encodeURIComponent(String(requestParameters.entryId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Use this method to delete the specific entry from the medicine inventory.
+     * Deletes specific entry
+     */
+    async deleteMedicineInventoryEntry(requestParameters: DeleteMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.deleteMedicineInventoryEntryRaw(requestParameters, initOverrides);
+    }
 
     /**
      * By using ambulanceId you get list of entries in ambulance medicine inventory
@@ -85,6 +188,85 @@ export class MedicineInventoryApi extends runtime.BaseAPI implements MedicineInv
      */
     async getMedicineInventoryEntries(requestParameters: GetMedicineInventoryEntriesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<MedicineInventoryEntry>> {
         const response = await this.getMedicineInventoryEntriesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * By using ambulanceId and entryId you can details of particular entry ambulance medicine inventory.
+     * Provides details about ambulance medicine inventory entry
+     */
+    async getMedicineInventoryEntryRaw(requestParameters: GetMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MedicineInventoryEntry>> {
+        if (requestParameters.ambulanceId === null || requestParameters.ambulanceId === undefined) {
+            throw new runtime.RequiredError('ambulanceId','Required parameter requestParameters.ambulanceId was null or undefined when calling getMedicineInventoryEntry.');
+        }
+
+        if (requestParameters.entryId === null || requestParameters.entryId === undefined) {
+            throw new runtime.RequiredError('entryId','Required parameter requestParameters.entryId was null or undefined when calling getMedicineInventoryEntry.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/medicine-inventory/{ambulanceId}/entries/{entryId}`.replace(`{${"ambulanceId"}}`, encodeURIComponent(String(requestParameters.ambulanceId))).replace(`{${"entryId"}}`, encodeURIComponent(String(requestParameters.entryId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => MedicineInventoryEntryFromJSON(jsonValue));
+    }
+
+    /**
+     * By using ambulanceId and entryId you can details of particular entry ambulance medicine inventory.
+     * Provides details about ambulance medicine inventory entry
+     */
+    async getMedicineInventoryEntry(requestParameters: GetMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MedicineInventoryEntry> {
+        const response = await this.getMedicineInventoryEntryRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Use this method to update content of the medicine inventory entry.
+     * Updates specific entry
+     */
+    async updateMedicineInventoryEntryRaw(requestParameters: UpdateMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MedicineInventoryEntry>> {
+        if (requestParameters.ambulanceId === null || requestParameters.ambulanceId === undefined) {
+            throw new runtime.RequiredError('ambulanceId','Required parameter requestParameters.ambulanceId was null or undefined when calling updateMedicineInventoryEntry.');
+        }
+
+        if (requestParameters.entryId === null || requestParameters.entryId === undefined) {
+            throw new runtime.RequiredError('entryId','Required parameter requestParameters.entryId was null or undefined when calling updateMedicineInventoryEntry.');
+        }
+
+        if (requestParameters.medicineInventoryEntry === null || requestParameters.medicineInventoryEntry === undefined) {
+            throw new runtime.RequiredError('medicineInventoryEntry','Required parameter requestParameters.medicineInventoryEntry was null or undefined when calling updateMedicineInventoryEntry.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/medicine-inventory/{ambulanceId}/entries/{entryId}`.replace(`{${"ambulanceId"}}`, encodeURIComponent(String(requestParameters.ambulanceId))).replace(`{${"entryId"}}`, encodeURIComponent(String(requestParameters.entryId))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: MedicineInventoryEntryToJSON(requestParameters.medicineInventoryEntry),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => MedicineInventoryEntryFromJSON(jsonValue));
+    }
+
+    /**
+     * Use this method to update content of the medicine inventory entry.
+     * Updates specific entry
+     */
+    async updateMedicineInventoryEntry(requestParameters: UpdateMedicineInventoryEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MedicineInventoryEntry> {
+        const response = await this.updateMedicineInventoryEntryRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -45,7 +45,7 @@ export class EeMedicineInventory {
           ? <div class="error">{this.errorMessage}</div>
           :
           <md-list>
-            {this.medicineInventory.map(medicine =>
+            {this.medicineInventory.map((medicine) =>
               <md-list-item onClick={() => this.entryClicked.emit(medicine.id)}>
                 <div slot="headline">{medicine.name}</div>
                 <div slot="supporting-text">{'Pocet kusov: ' + medicine.count}</div>

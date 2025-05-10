@@ -16,6 +16,8 @@ export namespace Components {
         "apiBase": string;
     }
     interface EeOrderEditor {
+        "ambulanceId": string;
+        "apiBase": string;
         "entryId": string;
     }
 }
@@ -86,6 +88,8 @@ declare namespace LocalJSX {
         "onEntry-clicked"?: (event: EeMedicineInventoryCustomEvent<string>) => void;
     }
     interface EeOrderEditor {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
         "entryId"?: string;
         "onEditor-closed"?: (event: EeOrderEditorCustomEvent<string>) => void;
     }
