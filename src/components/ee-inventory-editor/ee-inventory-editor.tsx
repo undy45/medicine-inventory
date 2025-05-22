@@ -1,48 +1,30 @@
 import { Component, Host, Prop, State, h, EventEmitter, Event } from '@stencil/core';
-import {
-  Configuration,
-  MedicineOrderEntry,
-  MedicineOrderApi,
-  Status, OrderStatusesApi,
-} from '../../api/medicine';
+import { MedicineInventoryApi, MedicineInventoryEntry, Configuration } from '../../api/medicine';
 
 @Component({
-  tag: 'ee-order-editor',
-  styleUrl: 'ee-order-editor.css',
+  tag: 'ee-inventory-editor',
+  styleUrl: 'ee-inventory-editor.css',
   shadow: true,
 })
-export class EeOrderEditor {
+export class EeInventoryEditor {
   @Prop() entryId: string;
   @Prop() ambulanceId: string;
   @Prop() apiBase: string;
 
   @Event({ eventName: 'editor-closed' }) editorClosed: EventEmitter<string>;
-  @State() private count = 2;
-  @State() entry: MedicineOrderEntry;
-  @State() statuses: Status[];
+  @Event({ eventName: 'create-order-clicked' }) createOrderClicked: EventEmitter<string>;
+  @State() private count = 1;
+  @State() entry: MedicineInventoryEntry;
   @State() errorMessage: string;
   @State() isValid: boolean;
 
   private formElement: HTMLFormElement;
 
   async componentWillLoad() {
-    this.getMedicineOrderEntryAsync();
-    this.getStatuses();
+    this.getMedicineInventoryEntryAsync();
   }
 
-  private async getMedicineOrderEntryAsync(): Promise<MedicineOrderEntry> {
-    if (this.entryId === '@new') {
-      this.isValid = false;
-      this.entry = {
-        id: '@new',
-        medicineId: '',
-        count: 15,
-        status: {
-          value: 'To_ship',
-        },
-      };
-      return this.entry;
-    }
+  private async getMedicineInventoryEntryAsync(): Promise<MedicineInventoryEntry> {
     if (!this.entryId) {
       this.isValid = false;
       return undefined;
@@ -52,9 +34,9 @@ export class EeOrderEditor {
         basePath: this.apiBase,
       });
 
-      const waitingListApi = new MedicineOrderApi(configuration);
+      const waitingListApi = new MedicineInventoryApi(configuration);
 
-      const response = await waitingListApi.getMedicineOrderEntryRaw({
+      const response = await waitingListApi.getMedicineInventoryEntryRaw({
         ambulanceId: this.ambulanceId,
         entryId: this.entryId,
       });
@@ -63,33 +45,12 @@ export class EeOrderEditor {
         this.entry = await response.value();
         this.isValid = true;
       } else {
-        this.errorMessage = `Cannot retrieve medicine order entry: ${response.raw.statusText}`;
+        this.errorMessage = `Cannot retrieve medicine inventory entry: ${response.raw.statusText}`;
       }
     } catch (err: any) {
-      this.errorMessage = `Cannot retrieve medicine order entry: ${err.message || 'unknown'}`;
+      this.errorMessage = `Cannot retrieve medicine inventory entry: ${err.message || 'unknown'}`;
     }
     return undefined;
-  }
-
-  private async getStatuses(): Promise<Status[]> {
-    try {
-      const configuration = new Configuration({
-        basePath: this.apiBase,
-      });
-
-      const orderStatusesApi = new OrderStatusesApi(configuration);
-
-      const response = await orderStatusesApi.getStatusesRaw();
-      if (response.raw.status < 299) {
-        this.statuses = await response.value();
-      }
-    } catch (err: any) {
-      // no strong dependency on conditions
-    }
-    // always have some fallback condition
-    return this.statuses || [{
-      value: 'Neurčený status',
-    }];
   }
 
   private handleSliderInput(event: Event) {
@@ -111,7 +72,7 @@ export class EeOrderEditor {
     return (
       <Host>
         <form ref={el => this.formElement = el}>
-          <md-filled-text-field label="Nazov lieku order editor"
+          <md-filled-text-field label="Nazov lieku inventory editor"
                                 required value={this.entry?.name}
                                 oninput={(ev: InputEvent) => {
                                   if (this.entry) {
@@ -130,19 +91,17 @@ export class EeOrderEditor {
                                 }}>
             <md-icon slot="leading-icon">fingerprint</md-icon>
           </md-filled-text-field>
-          {this.renderStatuses()}
         </form>
 
         <div class="count-slider">
-          <span class="label">Pocet baleni:&nbsp; </span>
+          <span class="label">Pocet baleni, ktore chcete vybrat:&nbsp; </span>
           <span class="label">{this.count}</span>
           <span class="label">&nbsp; ks baleni</span>
           <md-slider
-            min="1" max="99" value={this.entry?.count || 15} ticks labeled
+            min="1" max={this.entry?.count || 1} value={this.count} ticks labeled
             oninput={(ev: InputEvent) => {
-              if (this.entry) {
-                this.entry.count
-                  = Number.parseInt(this.handleInputEvent(ev));
+              if (this.count) {
+                this.count = Number.parseInt(this.handleInputEvent(ev));
               }
               this.handleSliderInput(ev);
             }}></md-slider>
@@ -150,7 +109,7 @@ export class EeOrderEditor {
 
         <md-divider></md-divider>
         <div class="actions">
-          <md-filled-tonal-button id="delete" disabled={!this.entry || this.entry?.id === '@new'}
+          <md-filled-tonal-button id="delete" disabled={!this.entry}
                                   onClick={() => this.deleteEntry()}>
             <md-icon slot="icon">delete</md-icon>
             Zmazať
@@ -166,43 +125,12 @@ export class EeOrderEditor {
             Uložiť
           </md-filled-button>
         </div>
+        <md-filled-icon-button className="add-button"
+                               onClick={() => this.createOrderClicked.emit('@new')}>
+          <md-icon>add</md-icon>
+        </md-filled-icon-button>
       </Host>
     );
-  }
-
-  private renderStatuses() {
-    let statuses = this.statuses || [];
-    // we want to have this.entry`s condition in the selection list
-    if (this.entry?.status) {
-      const index = statuses.findIndex(status => status.value === this.entry.status.value);
-      if (index < 0) {
-        statuses = [this.entry.status, ...statuses];
-      }
-    }
-    return (
-      <md-filled-select label="Stav objednavky"
-                        display-text={this.entry?.status?.value}
-                        oninput={(ev: InputEvent) => this.handleStatus(ev)}>
-        <md-icon slot="leading-icon">package</md-icon>
-        {statuses.map(condition => {
-          return (
-            <md-select-option
-              value={condition.value}
-              selected={condition.value === this.entry?.status?.value}>
-              <div slot="headline">{condition.value}</div>
-            </md-select-option>
-          );
-        })}
-      </md-filled-select>
-    );
-  }
-
-  private handleStatus(ev: InputEvent) {
-    if (this.entry) {
-      const value = this.handleInputEvent(ev);
-      const status = this.statuses.find(status => status.value === value);
-      this.entry.status = Object.assign({}, status);
-    }
   }
 
   private handleInputEvent(ev: InputEvent): string {
@@ -225,17 +153,13 @@ export class EeOrderEditor {
         basePath: this.apiBase,
       });
 
-      const medicineOrderApi = new MedicineOrderApi(configuration);
-      const response = this.entryId == '@new' ?
-        await medicineOrderApi.createMedicineOrderEntryRaw({
-          ambulanceId: this.ambulanceId,
-          medicineOrderEntry: this.entry,
-        }) :
-        await medicineOrderApi.updateMedicineOrderEntryRaw({
-          ambulanceId: this.ambulanceId,
-          entryId: this.entryId,
-          medicineOrderEntry: this.entry,
-        });
+      const medicineInventoryApi = new MedicineInventoryApi(configuration);
+      this.entry.count -= this.count;
+      const response = await medicineInventoryApi.updateMedicineInventoryEntryRaw({
+        ambulanceId: this.ambulanceId,
+        entryId: this.entryId,
+        medicineInventoryEntry: this.entry,
+      });
 
       if (response.raw.status < 299) {
         this.editorClosed.emit('store');
@@ -253,9 +177,9 @@ export class EeOrderEditor {
         basePath: this.apiBase,
       });
 
-      const medicineOrderApi = new MedicineOrderApi(configuration);
+      const medicineInventoryApi = new MedicineInventoryApi(configuration);
 
-      const response = await medicineOrderApi.deleteMedicineOrderEntryRaw({
+      const response = await medicineInventoryApi.deleteMedicineInventoryEntryRaw({
         ambulanceId: this.ambulanceId,
         entryId: this.entryId,
       });

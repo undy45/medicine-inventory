@@ -1,5 +1,3 @@
 /* tslint:disable */
 /* eslint-disable */
 export * from './MedicineInventoryApi';
-export * from './MedicineOrderApi';
-export * from './OrderStatusesApi';

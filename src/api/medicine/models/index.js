@@ -1,5 +1,3 @@
 /* tslint:disable */
 /* eslint-disable */
 export * from './MedicineInventoryEntry';
-export * from './MedicineOrderEntry';
-export * from './Status';

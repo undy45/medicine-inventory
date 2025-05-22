@@ -44,26 +44,42 @@ export class EeMedicineApp {
     let entryId = '@new';
 
     if (this.relativePath.startsWith('order/')) {
+      element = 'order';
+      entryId = this.relativePath.split('/')[1];
+    }
+    if (this.relativePath.startsWith('entry/')) {
       element = 'editor';
       entryId = this.relativePath.split('/')[1];
     }
 
-    const navigate = (path: string) => {
+    const navigate = (
+      path: string,
+      options?: { state?: any; info?: any; history?: 'auto' | 'replace' | 'push'; }) => {
       const absolute = new URL(path, new URL(this.basePath, document.baseURI)).pathname;
-      window.navigation.navigate(absolute);
+      window.navigation.navigate(absolute, options);
     };
 
     return (
       <Host>
-        {element === 'editor'
-          ? <ee-order-editor entry-id={entryId}
-                             ambulance-id={this.ambulanceId}
-                             api-base={this.apiBase}
-                             oneditor-closed={() => navigate('./list')}>
-          </ee-order-editor>
-          : <ee-medicine-inventory ambulance-id={this.ambulanceId} api-base={this.apiBase}
-                                   onentry-clicked={(ev: CustomEvent<string>) => navigate('./order/' + ev.detail)}>
-          </ee-medicine-inventory>
+        {
+          element === 'editor'
+            ? <ee-inventory-editor entry-id={entryId}
+                                   ambulance-id={this.ambulanceId}
+                                   api-base={this.apiBase}
+                                   oneditor-closed={() => navigate('./list')}
+                                   oncreate-order-clicked={(ev: CustomEvent<string>) => navigate('./order/' + ev.detail)}>
+            </ee-inventory-editor> :
+            element === 'order'
+              ? <ee-order-editor entry-id={entryId}
+                                 ambulance-id={this.ambulanceId}
+                                 api-base={this.apiBase}
+                                 oneditor-closed={() => navigate('./list')}>
+              </ee-order-editor>
+              :
+              <ee-medicine-inventory ambulance-id={this.ambulanceId} api-base={this.apiBase}
+                                     onentry-clicked={(ev: CustomEvent<string>) => navigate('./entry/' + ev.detail)}
+                                     onorder-clicked={(ev: CustomEvent<string>) => navigate('./order/' + ev.detail)}>
+              </ee-medicine-inventory>
         }
 
       </Host>

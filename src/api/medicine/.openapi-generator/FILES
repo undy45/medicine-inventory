@@ -1,6 +1,10 @@
 apis/MedicineInventoryApi.ts
+apis/MedicineOrderApi.ts
+apis/OrderStatusesApi.ts
 apis/index.ts
 index.ts
 models/MedicineInventoryEntry.ts
+models/MedicineOrderEntry.ts
+models/Status.ts
 models/index.ts
 runtime.ts

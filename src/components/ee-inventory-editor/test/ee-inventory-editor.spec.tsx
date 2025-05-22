@@ -1,34 +1,16 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { EeOrderEditor } from '../ee-order-editor';
-import { MedicineOrderEntry, Status } from '../../../api/medicine';
+import { EeInventoryEditor } from '../ee-inventory-editor';
+import { MedicineInventoryEntry } from '../../../api/medicine';
 import fetchMock from 'jest-fetch-mock';
-import { EeInventoryEditor } from '../../ee-inventory-editor/ee-inventory-editor';
 
-describe('ee-order-editor', () => {
-  const sampleEntry: MedicineOrderEntry = {
+describe('ee-inventory-editor', () => {
+
+  const sampleEntry: MedicineInventoryEntry = {
     id: 'entry-1',
     medicineId: 'p-1',
     name: 'Paralen',
     count: 20,
-    status: {
-      value: 'Shipping',
-    },
   };
-
-  const sampleStatuses: Status[] = [
-    {
-      value: "To_ship"
-    },
-    {
-      value: "Shipped"
-    },
-    {
-      value: "Delivered"
-    },
-    {
-      value: "Canceled"
-    }
-  ];
 
   let delay = async (milliseconds: number) => await new Promise<void>(resolve => {
     setTimeout(() => resolve(), milliseconds);
@@ -42,42 +24,51 @@ describe('ee-order-editor', () => {
     fetchMock.resetMocks();
   });
 
-  it('buttons shall be of different type', async () => {
-    fetchMock.mockResponses(
-      [JSON.stringify(sampleEntry), { status: 200 }],
-      [JSON.stringify(sampleStatuses), { status: 200 }]
-    );
-
+  it('renders error message on network issues', async () => {
     const page = await newSpecPage({
-      components: [EeOrderEditor],
-      html: `<ee-order-editor entry-id="test-entry" ambulance-id="test-ambulance" api-base="http://sample.test/api"></ee-order-editor>`,
+      components: [EeInventoryEditor],
+      html: `<ee-inventory-editor entry-id="${sampleEntry.id}" ambulance-id="test-ambulance" api-base="http://test/api"></ee-inventory-editor>`,
     });
+    const wlList = page.rootInstance as EeInventoryEditor;
+    const foundEntry = wlList?.entry;
 
-    await delay(300);
+    // Wait for the DOM to update
     await page.waitForChanges();
 
+    // Query the DOM for error message and list items
+    const errorMessage = page.root.shadowRoot.querySelectorAll(".error");
+    const items = page.root.shadowRoot.querySelectorAll("md-list-item");
+
+    // Assert that the error message is displayed and no patients are listed
+    expect(errorMessage.length).toBeGreaterThanOrEqual(1);
+    expect(foundEntry).toBeUndefined();
+    expect(items.length).toEqual(0);
+  });
+
+  it('buttons shall be of different type', async () => {
+    // Mock the API response using sampleEntry
+    fetchMock.mockResponseOnce(JSON.stringify(sampleEntry));
+    const page = await newSpecPage({
+      components: [EeInventoryEditor],
+      html: `<ee-inventory-editor entry-id="${sampleEntry.id}" ambulance-id="test-ambulance" api-base="http://test/api"></ee-inventory-editor>`,
+    });
     let items: any = await page.root.shadowRoot.querySelectorAll('md-filled-button');
     expect(items.length).toEqual(1);
     items = await page.root.shadowRoot.querySelectorAll('md-outlined-button');
     expect(items.length).toEqual(1);
     items = await page.root.shadowRoot.querySelectorAll('md-filled-tonal-button');
     expect(items.length).toEqual(1);
+    items = await page.root.shadowRoot.querySelectorAll('md-filled-icon-button');
+    expect(items.length).toEqual(1);
   });
 
   it('should render required elements', async () => {
-    fetchMock.mockResponses(
-      [JSON.stringify(sampleEntry), { status: 200 }],
-      [JSON.stringify(sampleStatuses), { status: 200 }]
-    );
-
+    // Mock the API response using sampleEntry
+    fetchMock.mockResponseOnce(JSON.stringify(sampleEntry));
     const page = await newSpecPage({
-      components: [EeOrderEditor],
-      html: `<ee-order-editor entry-id="test-entry" ambulance-id="test-ambulance" api-base="http://sample.test/api"></ee-order-editor>`,
+      components: [EeInventoryEditor],
+      html: `<ee-inventory-editor entry-id="${sampleEntry.id}" ambulance-id="test-ambulance" api-base="http://test/api"></ee-inventory-editor>`,
     });
-
-    await delay(300);
-    await page.waitForChanges();
-
     const textFields = await page.root.shadowRoot.querySelectorAll('md-filled-text-field');
     expect(textFields.length).toEqual(2);
     const countSlider = await page.root.shadowRoot.querySelector('md-slider');
@@ -85,13 +76,11 @@ describe('ee-order-editor', () => {
   });
 
   it('first text field is medicine name', async () => {
-    fetchMock.mockResponses(
-      [JSON.stringify(sampleEntry), { status: 200 }],
-      [JSON.stringify(sampleStatuses), { status: 200 }]
-    );
+    // Mock the API response using sampleEntry
+    fetchMock.mockResponseOnce(JSON.stringify(sampleEntry));
     const page = await newSpecPage({
-      components: [EeOrderEditor],
-      html: `<ee-order-editor entry-id="test-entry" ambulance-id="test-ambulance" api-base="http://sample.test/api"></ee-order-editor>`,
+      components: [EeInventoryEditor],
+      html: `<ee-inventory-editor entry-id="${sampleEntry.id}" ambulance-id="test-ambulance" api-base="http://test/api"></ee-inventory-editor>`,
     });
     await delay(300);
     await page.waitForChanges();
@@ -102,10 +91,8 @@ describe('ee-order-editor', () => {
   });
 
   it('should emit editor-closed event on cancel button click', async () => {
-    fetchMock.mockResponses(
-      [JSON.stringify(sampleEntry), { status: 200 }],
-      [JSON.stringify(sampleStatuses), { status: 200 }]
-    );
+    // Mock the API response using sampleEntry
+    fetchMock.mockResponseOnce(JSON.stringify(sampleEntry));
     const page = await newSpecPage({
       components: [EeInventoryEditor],
       html: `<ee-inventory-editor entry-id="entry-1" ambulance-id="test-ambulance" api-base="http://test/api"></ee-inventory-editor>`,
@@ -123,10 +110,8 @@ describe('ee-order-editor', () => {
   });
 
   it('should emit editor-closed event on delete button click', async () => {
-    fetchMock.mockResponses(
-      [JSON.stringify(sampleEntry), { status: 200 }],
-      [JSON.stringify(sampleStatuses), { status: 200 }]
-    );
+    // Mock the API response using sampleEntry
+    fetchMock.mockResponseOnce(JSON.stringify(sampleEntry));
     const page = await newSpecPage({
       components: [EeInventoryEditor],
       html: `<ee-inventory-editor entry-id="entry-1" ambulance-id="test-ambulance" api-base="http://test/api"></ee-inventory-editor>`,
@@ -144,10 +129,8 @@ describe('ee-order-editor', () => {
   });
 
   it('should emit editor-closed event on confirm button click', async () => {
-    fetchMock.mockResponses(
-      [JSON.stringify(sampleEntry), { status: 200 }],
-      [JSON.stringify(sampleStatuses), { status: 200 }]
-    );
+    // Mock the API response using sampleEntry
+    fetchMock.mockResponseOnce(JSON.stringify(sampleEntry));
     const page = await newSpecPage({
       components: [EeInventoryEditor],
       html: `<ee-inventory-editor entry-id="entry-1" ambulance-id="test-ambulance" api-base="http://test/api"></ee-inventory-editor>`,
@@ -162,5 +145,24 @@ describe('ee-order-editor', () => {
     await delay(300);
 
     expect(editorClosedSpy).toHaveBeenCalledWith('store');
+  });
+
+  it('should emit create order clicked event on add button click', async () => {
+    // Mock the API response using sampleEntry
+    fetchMock.mockResponseOnce(JSON.stringify(sampleEntry));
+    const page = await newSpecPage({
+      components: [EeInventoryEditor],
+      html: `<ee-inventory-editor entry-id="entry-1" ambulance-id="test-ambulance" api-base="http://test/api"></ee-inventory-editor>`,
+    });
+    await page.waitForChanges();
+
+    const createOrderClickedSpy = jest.spyOn(page.rootInstance.createOrderClicked, 'emit');
+
+    const addButton = page.root.shadowRoot.querySelector('md-filled-icon-button');
+    addButton.click();
+
+    await delay(300);
+
+    expect(createOrderClickedSpy).toHaveBeenCalledWith('@new');
   });
 });

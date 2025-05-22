@@ -6,6 +6,11 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
+    interface EeInventoryEditor {
+        "ambulanceId": string;
+        "apiBase": string;
+        "entryId": string;
+    }
     interface EeMedicineApp {
         "ambulanceId": string;
         "apiBase": string;
@@ -21,6 +26,10 @@ export namespace Components {
         "entryId": string;
     }
 }
+export interface EeInventoryEditorCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLEeInventoryEditorElement;
+}
 export interface EeMedicineInventoryCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLEeMedicineInventoryElement;
@@ -30,6 +39,24 @@ export interface EeOrderEditorCustomEvent<T> extends CustomEvent<T> {
     target: HTMLEeOrderEditorElement;
 }
 declare global {
+    interface HTMLEeInventoryEditorElementEventMap {
+        "editor-closed": string;
+        "create-order-clicked": string;
+    }
+    interface HTMLEeInventoryEditorElement extends Components.EeInventoryEditor, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLEeInventoryEditorElementEventMap>(type: K, listener: (this: HTMLEeInventoryEditorElement, ev: EeInventoryEditorCustomEvent<HTMLEeInventoryEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLEeInventoryEditorElementEventMap>(type: K, listener: (this: HTMLEeInventoryEditorElement, ev: EeInventoryEditorCustomEvent<HTMLEeInventoryEditorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLEeInventoryEditorElement: {
+        prototype: HTMLEeInventoryEditorElement;
+        new (): HTMLEeInventoryEditorElement;
+    };
     interface HTMLEeMedicineAppElement extends Components.EeMedicineApp, HTMLStencilElement {
     }
     var HTMLEeMedicineAppElement: {
@@ -38,6 +65,7 @@ declare global {
     };
     interface HTMLEeMedicineInventoryElementEventMap {
         "entry-clicked": string;
+        "order-clicked": string;
     }
     interface HTMLEeMedicineInventoryElement extends Components.EeMedicineInventory, HTMLStencilElement {
         addEventListener<K extends keyof HTMLEeMedicineInventoryElementEventMap>(type: K, listener: (this: HTMLEeMedicineInventoryElement, ev: EeMedicineInventoryCustomEvent<HTMLEeMedicineInventoryElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -71,12 +99,20 @@ declare global {
         new (): HTMLEeOrderEditorElement;
     };
     interface HTMLElementTagNameMap {
+        "ee-inventory-editor": HTMLEeInventoryEditorElement;
         "ee-medicine-app": HTMLEeMedicineAppElement;
         "ee-medicine-inventory": HTMLEeMedicineInventoryElement;
         "ee-order-editor": HTMLEeOrderEditorElement;
     }
 }
 declare namespace LocalJSX {
+    interface EeInventoryEditor {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "entryId"?: string;
+        "onCreate-order-clicked"?: (event: EeInventoryEditorCustomEvent<string>) => void;
+        "onEditor-closed"?: (event: EeInventoryEditorCustomEvent<string>) => void;
+    }
     interface EeMedicineApp {
         "ambulanceId"?: string;
         "apiBase"?: string;
@@ -86,6 +122,7 @@ declare namespace LocalJSX {
         "ambulanceId"?: string;
         "apiBase"?: string;
         "onEntry-clicked"?: (event: EeMedicineInventoryCustomEvent<string>) => void;
+        "onOrder-clicked"?: (event: EeMedicineInventoryCustomEvent<string>) => void;
     }
     interface EeOrderEditor {
         "ambulanceId"?: string;
@@ -94,6 +131,7 @@ declare namespace LocalJSX {
         "onEditor-closed"?: (event: EeOrderEditorCustomEvent<string>) => void;
     }
     interface IntrinsicElements {
+        "ee-inventory-editor": EeInventoryEditor;
         "ee-medicine-app": EeMedicineApp;
         "ee-medicine-inventory": EeMedicineInventory;
         "ee-order-editor": EeOrderEditor;
@@ -103,6 +141,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "ee-inventory-editor": LocalJSX.EeInventoryEditor & JSXBase.HTMLAttributes<HTMLEeInventoryEditorElement>;
             "ee-medicine-app": LocalJSX.EeMedicineApp & JSXBase.HTMLAttributes<HTMLEeMedicineAppElement>;
             "ee-medicine-inventory": LocalJSX.EeMedicineInventory & JSXBase.HTMLAttributes<HTMLEeMedicineInventoryElement>;
             "ee-order-editor": LocalJSX.EeOrderEditor & JSXBase.HTMLAttributes<HTMLEeOrderEditorElement>;

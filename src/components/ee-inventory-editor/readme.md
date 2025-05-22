@@ -1,4 +1,4 @@
-# ee-order-editor
+# ee-inventory-editor
 
 
 
@@ -16,9 +16,10 @@
 
 ## Events
 
-| Event           | Description | Type                  |
-| --------------- | ----------- | --------------------- |
-| `editor-closed` |             | `CustomEvent<string>` |
+| Event                  | Description | Type                  |
+| ---------------------- | ----------- | --------------------- |
+| `create-order-clicked` |             | `CustomEvent<string>` |
+| `editor-closed`        |             | `CustomEvent<string>` |
 
 
 ## Dependencies
@@ -30,8 +31,8 @@
 ### Graph
 ```mermaid
 graph TD;
-  ee-medicine-app --> ee-order-editor
-  style ee-order-editor fill:#f9f,stroke:#333,stroke-width:4px
+  ee-medicine-app --> ee-inventory-editor
+  style ee-inventory-editor fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

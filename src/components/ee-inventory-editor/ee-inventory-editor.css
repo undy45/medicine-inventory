@@ -43,10 +43,3 @@ form{
 md-divider {
   margin-bottom: var(--_wl-editor_gap);
 }
-
-.add-button {
-  position: absolute;
-  right: 1rem;
-  --md-filled-icon-button-container-size: 4rem;
-  --md-filled-icon-button-icon-size: 3rem;
-}
