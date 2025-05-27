@@ -7,8 +7,6 @@ WORKDIR /build
 COPY package.json .
 RUN npm install
 
-RUN apt-get update && apt-get install -y docker.io && systemctl start docker
-
 COPY . .
 RUN npm run build
 
