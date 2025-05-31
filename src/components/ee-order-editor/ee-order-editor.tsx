@@ -171,7 +171,15 @@ export class EeOrderEditor {
   }
 
   private renderStatuses() {
+    if (this.entry?.id === '@new') {
+      return
+    }
     let statuses = this.statuses || [];
+    // Filter statuses based on validTransitions
+    if (this.entry?.status?.validTransitions) {
+      const validIds = this.entry.status.validTransitions;
+      statuses = statuses.filter(status => validIds.includes(status.id!) || this.entry.status.id === status.id);
+    }
     // we want to have this.entry`s condition in the selection list
     if (this.entry?.status) {
       const index = statuses.findIndex(status => status.value === this.entry.status.value);
@@ -184,12 +192,12 @@ export class EeOrderEditor {
                         display-text={this.entry?.status?.value}
                         oninput={(ev: InputEvent) => this.handleStatus(ev)}>
         <md-icon slot="leading-icon">package</md-icon>
-        {statuses.map(condition => {
+        {statuses.map(status => {
           return (
             <md-select-option
-              value={condition.value}
-              selected={condition.value === this.entry?.status?.value}>
-              <div slot="headline">{condition.value}</div>
+              value={status.value}
+              selected={status.value === this.entry?.status?.value}>
+              <div slot="headline">{status.value}</div>
             </md-select-option>
           );
         })}

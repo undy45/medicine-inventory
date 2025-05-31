@@ -1,8 +1,10 @@
+apis/AmbulancesApi.ts
 apis/MedicineInventoryApi.ts
 apis/MedicineOrderApi.ts
 apis/OrderStatusesApi.ts
 apis/index.ts
 index.ts
+models/Ambulance.ts
 models/MedicineInventoryEntry.ts
 models/MedicineOrderEntry.ts
 models/Status.ts

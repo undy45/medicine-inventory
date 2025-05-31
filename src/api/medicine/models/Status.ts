@@ -20,11 +20,23 @@ import { exists, mapValues } from '../runtime';
  */
 export interface Status {
     /**
+     * Unique identifier of the status
+     * @type {number}
+     * @memberof Status
+     */
+    id?: number;
+    /**
      * 
      * @type {string}
      * @memberof Status
      */
     value: string;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof Status
+     */
+    validTransitions?: Array<number>;
 }
 
 /**
@@ -47,7 +59,9 @@ export function StatusFromJSONTyped(json: any, ignoreDiscriminator: boolean): St
     }
     return {
         
+        'id': !exists(json, 'id') ? undefined : json['id'],
         'value': json['value'],
+        'validTransitions': !exists(json, 'validTransitions') ? undefined : json['validTransitions'],
     };
 }
 
@@ -60,7 +74,9 @@ export function StatusToJSON(value?: Status | null): any {
     }
     return {
         
+        'id': value.id,
         'value': value.value,
+        'validTransitions': value.validTransitions,
     };
 }
 

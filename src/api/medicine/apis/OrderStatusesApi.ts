@@ -22,6 +22,10 @@ import {
     StatusToJSON,
 } from '../models';
 
+export interface GetStatusRequest {
+    statusId: string;
+}
+
 /**
  * OrderStatusesApi - interface
  * 
@@ -29,6 +33,37 @@ import {
  * @interface OrderStatusesApiInterface
  */
 export interface OrderStatusesApiInterface {
+    /**
+     * Get the initial status for the order
+     * @summary Provides the initial status for the order
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OrderStatusesApiInterface
+     */
+    getInitialStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Status>>;
+
+    /**
+     * Get the initial status for the order
+     * Provides the initial status for the order
+     */
+    getInitialStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Status>;
+
+    /**
+     * Get list of predefined order statuses
+     * @summary Provides the list of valid statuses for the order
+     * @param {string} statusId pass the id of the particular status
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OrderStatusesApiInterface
+     */
+    getStatusRaw(requestParameters: GetStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Status>>;
+
+    /**
+     * Get list of predefined order statuses
+     * Provides the list of valid statuses for the order
+     */
+    getStatus(requestParameters: GetStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Status>;
+
     /**
      * Get list of predefined order statuses
      * @summary Provides the list of valid statuses for the order
@@ -50,6 +85,66 @@ export interface OrderStatusesApiInterface {
  * 
  */
 export class OrderStatusesApi extends runtime.BaseAPI implements OrderStatusesApiInterface {
+
+    /**
+     * Get the initial status for the order
+     * Provides the initial status for the order
+     */
+    async getInitialStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Status>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/medicine-order/initial-status`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => StatusFromJSON(jsonValue));
+    }
+
+    /**
+     * Get the initial status for the order
+     * Provides the initial status for the order
+     */
+    async getInitialStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Status> {
+        const response = await this.getInitialStatusRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get list of predefined order statuses
+     * Provides the list of valid statuses for the order
+     */
+    async getStatusRaw(requestParameters: GetStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Status>> {
+        if (requestParameters.statusId === null || requestParameters.statusId === undefined) {
+            throw new runtime.RequiredError('statusId','Required parameter requestParameters.statusId was null or undefined when calling getStatus.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/medicine-order/statuses/{statusId}`.replace(`{${"statusId"}}`, encodeURIComponent(String(requestParameters.statusId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => StatusFromJSON(jsonValue));
+    }
+
+    /**
+     * Get list of predefined order statuses
+     * Provides the list of valid statuses for the order
+     */
+    async getStatus(requestParameters: GetStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Status> {
+        const response = await this.getStatusRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Get list of predefined order statuses
