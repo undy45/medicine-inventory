@@ -3,7 +3,7 @@ import {
   Configuration,
   MedicineOrderEntry,
   MedicineOrderApi,
-  Status, OrderStatusesApi,
+  Status, OrderStatusesApi, ApiResponse,
 } from '../../api/medicine';
 
 @Component({
@@ -254,16 +254,20 @@ export class EeOrderEditor {
       });
 
       const medicineOrderApi = new MedicineOrderApi(configuration);
-      const response = this.entryId == '@new' ?
-        await medicineOrderApi.createMedicineOrderEntryRaw({
+      let response: ApiResponse<MedicineOrderEntry>;
+      if (this.entryId == '@new') {
+        this.entry.id = null
+        response = await medicineOrderApi.createMedicineOrderEntryRaw({
           ambulanceId: this.ambulanceId,
           medicineOrderEntry: this.entry,
-        }) :
-        await medicineOrderApi.updateMedicineOrderEntryRaw({
+        })
+      } else {
+        response = await medicineOrderApi.updateMedicineOrderEntryRaw({
           ambulanceId: this.ambulanceId,
           entryId: this.entryId,
           medicineOrderEntry: this.entry,
         });
+      }
 
       if (response.raw.status < 299) {
         this.editorClosed.emit('store');
