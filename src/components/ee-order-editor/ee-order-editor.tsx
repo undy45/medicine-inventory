@@ -19,6 +19,7 @@ export class EeOrderEditor {
   @Event({ eventName: 'editor-closed' }) editorClosed: EventEmitter<string>;
   @State() private count = 2;
   @State() entry: MedicineOrderEntry;
+  @State() originalStatus: Status;
   @State() statuses: Status[];
   @State() errorMessage: string;
   @State() isValid: boolean;
@@ -26,20 +27,21 @@ export class EeOrderEditor {
   private formElement: HTMLFormElement;
 
   async componentWillLoad() {
-    this.getMedicineOrderEntryAsync();
     this.getStatuses();
+    this.getMedicineOrderEntryAsync();
   }
 
   private async getMedicineOrderEntryAsync(): Promise<MedicineOrderEntry> {
     if (this.entryId === '@new') {
       this.isValid = false;
+      this.getInitialStatus().then(status => {
+        this.originalStatus = status;
+      })
       this.entry = {
         id: '@new',
         medicineId: '',
         count: 15,
-        status: {
-          value: 'To_ship',
-        },
+        status: this.originalStatus
       };
       return this.entry;
     }
@@ -61,6 +63,7 @@ export class EeOrderEditor {
 
       if (response.raw.status < 299) {
         this.entry = await response.value();
+        this.originalStatus = this.entry.status;
         this.isValid = true;
       } else {
         this.errorMessage = `Cannot retrieve medicine order entry: ${response.raw.statusText}`;
@@ -90,6 +93,30 @@ export class EeOrderEditor {
     return this.statuses || [{
       value: 'Neurčený status',
     }];
+  }
+
+  private async getInitialStatus(): Promise<Status> {
+    let result: Status = {
+      id: 0,
+      value: 'Neurčený status',
+      validTransitions: []
+    };
+    try {
+      const configuration = new Configuration({
+        basePath: this.apiBase,
+      });
+
+      const orderStatusesApi = new OrderStatusesApi(configuration);
+
+      const response = await orderStatusesApi.getInitialStatusRaw();
+      if (response.raw.status < 299) {
+        result = await response.value();
+      }
+    } catch (err: any) {
+      // no strong dependency on conditions
+    }
+
+    return result;
   }
 
   private handleSliderInput(event: Event) {
@@ -175,17 +202,10 @@ export class EeOrderEditor {
       return
     }
     let statuses = this.statuses || [];
-    // Filter statuses based on validTransitions
-    if (this.entry?.status?.validTransitions) {
-      const validIds = this.entry.status.validTransitions;
-      statuses = statuses.filter(status => validIds.includes(status.id!) || this.entry.status.id === status.id);
-    }
-    // we want to have this.entry`s condition in the selection list
-    if (this.entry?.status) {
-      const index = statuses.findIndex(status => status.value === this.entry.status.value);
-      if (index < 0) {
-        statuses = [this.entry.status, ...statuses];
-      }
+    const validIds = this.originalStatus?.validTransitions;
+    statuses = statuses.filter(status => validIds.includes(status.id));
+    if (this.originalStatus) {
+      statuses.unshift(this.originalStatus);
     }
     return (
       <md-filled-select label="Stav objednavky"
