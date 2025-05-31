@@ -11,22 +11,32 @@ describe('ee-order-editor', () => {
     name: 'Paralen',
     count: 20,
     status: {
-      value: 'Shipping',
-    },
+      id: 1,
+      value: "To_ship",
+      validTransitions: [2, 4]
+    }
   };
 
   const sampleStatuses: Status[] = [
     {
-      value: "To_ship"
+      id: 1,
+      value: "To_ship",
+      validTransitions: [2, 4]
     },
     {
-      value: "Shipped"
+      id: 2,
+      value: "Shipped",
+      validTransitions: [3, 4]
     },
     {
-      value: "Delivered"
+      id: 3,
+      value: "Delivered",
+      validTransitions: []
     },
     {
-      value: "Canceled"
+      id: 4,
+      value: "Canceled",
+      validTransitions: []
     }
   ];
 
@@ -86,6 +96,7 @@ describe('ee-order-editor', () => {
 
   it('first text field is medicine name', async () => {
     fetchMock.mockResponses(
+      [JSON.stringify(sampleStatuses[0]), { status: 200 }],
       [JSON.stringify(sampleEntry), { status: 200 }],
       [JSON.stringify(sampleStatuses), { status: 200 }]
     );
