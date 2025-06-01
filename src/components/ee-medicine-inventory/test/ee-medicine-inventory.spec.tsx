@@ -26,7 +26,9 @@ describe('ee-medicine-inventory', () => {
       name: "Paralen",
       count: 20,
       status: {
-        value: "Shipping"
+        id: 1,
+        value: "Shipping",
+        validTransitions: [2, 4]
       }
     },
     {
@@ -35,7 +37,9 @@ describe('ee-medicine-inventory', () => {
       name: "Mig 400",
       count: 30,
       status: {
-        value: "Shipping"
+        id: 1,
+        value: "Shipping",
+        validTransitions: [2, 4]
       }
     },
     {
@@ -44,7 +48,9 @@ describe('ee-medicine-inventory', () => {
       name: "Ibuprofin",
       count: 40,
       status: {
-        value: "Shipping"
+        id: 1,
+        value: "Shipping",
+        validTransitions: [2, 4]
       }
     }
   ];
