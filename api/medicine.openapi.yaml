@@ -493,7 +493,7 @@ components:
     Status:
       description: "Describes status order"
       required:
-        - value
+        - id
       properties:
         id:
           type: integer

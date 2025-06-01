@@ -24,13 +24,13 @@ export interface Status {
      * @type {number}
      * @memberof Status
      */
-    id?: number;
+    id: number;
     /**
      * 
      * @type {string}
      * @memberof Status
      */
-    value: string;
+    value?: string;
     /**
      * 
      * @type {Array<number>}
@@ -44,7 +44,7 @@ export interface Status {
  */
 export function instanceOfStatus(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "value" in value;
+    isInstance = isInstance && "id" in value;
 
     return isInstance;
 }
@@ -59,8 +59,8 @@ export function StatusFromJSONTyped(json: any, ignoreDiscriminator: boolean): St
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'value': json['value'],
+        'id': json['id'],
+        'value': !exists(json, 'value') ? undefined : json['value'],
         'validTransitions': !exists(json, 'validTransitions') ? undefined : json['validTransitions'],
     };
 }

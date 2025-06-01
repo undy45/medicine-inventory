@@ -91,6 +91,7 @@ export class EeOrderEditor {
     }
     // always have some fallback condition
     return this.statuses || [{
+      id: 0,
       value: 'Neurčený status',
     }];
   }
@@ -263,6 +264,7 @@ export class EeOrderEditor {
         })
       } else {
         this.updateStatus()
+        this.prepareStatusForRequest()
         response = await medicineOrderApi.updateMedicineOrderEntryRaw({
           ambulanceId: this.ambulanceId,
           entryId: this.entryId,
@@ -290,6 +292,14 @@ export class EeOrderEditor {
       } else {
         this.entry.status = selectedStatus;
       }
+    }
+  }
+
+  private prepareStatusForRequest() {
+    if (this.entry) {
+      this.entry.status = {
+        id: this.entry.status.id
+      };
     }
   }
 
