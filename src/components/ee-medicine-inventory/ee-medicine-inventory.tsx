@@ -65,7 +65,7 @@ export class EeMedicineInventory {
       if (response.raw.status < 299) {
         const medicineOrders = await response.value();
         return medicineOrders.filter(medicineOrder => medicineOrder.count > 0)
-          .filter(medicineOrder => medicineOrder.status.value != 'Cancelled');
+          .filter(medicineOrder => medicineOrder.status.validTransitions.length != 0);
       } else {
         this.error = {
           isCritical: false,
