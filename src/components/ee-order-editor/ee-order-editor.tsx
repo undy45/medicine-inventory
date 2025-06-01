@@ -256,8 +256,8 @@ export class EeOrderEditor {
 
       const medicineOrderApi = new MedicineOrderApi(configuration);
       let response: ApiResponse<MedicineOrderEntry>;
+      this.entry.id = null
       if (this.entryId == '@new') {
-        this.entry.id = null
         response = await medicineOrderApi.createMedicineOrderEntryRaw({
           ambulanceId: this.ambulanceId,
           medicineOrderEntry: this.entry,
