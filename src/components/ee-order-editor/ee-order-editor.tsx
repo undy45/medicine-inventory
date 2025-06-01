@@ -262,6 +262,7 @@ export class EeOrderEditor {
           medicineOrderEntry: this.entry,
         })
       } else {
+        this.updateStatus()
         response = await medicineOrderApi.updateMedicineOrderEntryRaw({
           ambulanceId: this.ambulanceId,
           entryId: this.entryId,
@@ -276,6 +277,19 @@ export class EeOrderEditor {
       }
     } catch (err: any) {
       this.errorMessage = `Cannot store entry: ${err.message || 'unknown'}`;
+    }
+  }
+
+  private updateStatus() {
+    if (this.entry) {
+      let selectedStatus = this.statuses.find(status => {
+        return status.value === this.entry.status.value;
+      });
+      if (selectedStatus === this.originalStatus) {
+        this.entry.status = undefined;
+      } else {
+        this.entry.status = selectedStatus;
+      }
     }
   }
 
