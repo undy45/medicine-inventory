@@ -67,7 +67,7 @@ export class EeMedicineInventory {
         console.log('Medicine orders:', medicineOrders);
         const nonEmptyOrders = medicineOrders.filter(order => order.count > 0);
         console.log('Non empty orders:', nonEmptyOrders);
-        const nonEndingStatuses = nonEmptyOrders..filter(medicineOrder => medicineOrder.status?.validTransitions?.length > 0);
+        const nonEndingStatuses = nonEmptyOrders.filter(medicineOrder => medicineOrder.status?.validTransitions?.length > 0);
         console.log('Non ending status orders:', nonEndingStatuses);
         return nonEndingStatuses
       } else {
