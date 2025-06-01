@@ -21,8 +21,8 @@ export class EeMedicineInventory {
   @Prop() ambulanceId: string;
   @State() error: CustomError;
 
-  medicineInventory: MedicineInventoryEntry[];
-  medicineOrders: MedicineOrderEntry[];
+  @State() medicineInventory: MedicineInventoryEntry[];
+  @State() medicineOrders: MedicineOrderEntry[];
 
   private async getMedicineInventoryAsync(): Promise<MedicineInventoryEntry[]> {
     // be prepared for connectivity issues
