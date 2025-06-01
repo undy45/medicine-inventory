@@ -1,10 +1,10 @@
-import { Component, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
+import { Component, Event, EventEmitter, h, Host, Prop, State } from '@stencil/core';
 import {
+  Configuration,
   MedicineInventoryApi,
   MedicineInventoryEntry,
-  Configuration,
-  MedicineOrderEntry,
   MedicineOrderApi,
+  MedicineOrderEntry,
 } from '../../api/medicine';
 import { CustomError } from '../../global/custom-error';
 
@@ -64,12 +64,8 @@ export class EeMedicineInventory {
       const response = await medicineOrderApi.getMedicineOrderEntriesRaw({ ambulanceId: this.ambulanceId });
       if (response.raw.status < 299) {
         const medicineOrders = await response.value();
-        console.log('Medicine orders:', medicineOrders);
         const nonEmptyOrders = medicineOrders.filter(order => order.count > 0);
-        console.log('Non empty orders:', nonEmptyOrders);
-        const nonEndingStatuses = nonEmptyOrders.filter(medicineOrder => medicineOrder.status?.validTransitions?.length > 0);
-        console.log('Non ending status orders:', nonEndingStatuses);
-        return nonEndingStatuses
+        return nonEmptyOrders.filter(medicineOrder => medicineOrder.status?.validTransitions?.length > 0)
       } else {
         this.error = {
           isCritical: false,
