@@ -64,8 +64,12 @@ export class EeMedicineInventory {
       const response = await medicineOrderApi.getMedicineOrderEntriesRaw({ ambulanceId: this.ambulanceId });
       if (response.raw.status < 299) {
         const medicineOrders = await response.value();
-        return medicineOrders.filter(medicineOrder => medicineOrder.count > 0)
-          .filter(medicineOrder => medicineOrder.status.validTransitions.length != 0);
+        console.log('Medicine orders:', medicineOrders);
+        const nonEmptyOrders = medicineOrders.filter(order => order.count > 0);
+        console.log('Non empty orders:', nonEmptyOrders);
+        const nonEndingStatuses = nonEmptyOrders..filter(medicineOrder => medicineOrder.status?.validTransitions?.length > 0);
+        console.log('Non ending status orders:', nonEndingStatuses);
+        return nonEndingStatuses
       } else {
         this.error = {
           isCritical: false,
